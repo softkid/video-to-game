@@ -14,6 +14,7 @@ gallery/<game>/                poster.gif, README.md, game/ (code only; assets l
 prompts/                       gameplay video prompts
 examples/plays/                real playtest scenarios
 tests/check_repo.py            static checks: links, sizes, hygiene, script syntax
+hahao/                         HAHAO GAMES build runner (AGEIS Auto): pipeline, CSP packaging, Chromium verify — see hahao/README.md
 .claude-plugin/                Claude Code plugin + marketplace manifests
 ```
 
@@ -21,6 +22,7 @@ tests/check_repo.py            static checks: links, sizes, hygiene, script synt
 
 ```bash
 python3 tests/check_repo.py
+cd hahao && npm install && npm test     # the HAHAO runner
 ```
 
 ## Rules

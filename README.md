@@ -5,6 +5,9 @@ A video model designs the game (its look, camera and one memorable mechanic); th
 frame, generates every image, 3D model and sound with fal to match it, writes the game in Three.js, then plays it
 with the keyboard and films its best seconds as proof. It works with Claude Code, Codex, Cursor, Gemini and others.
 
+> **HAHAO GAMES fork.** [`hahao/`](hahao/README.md) runs this skill as the automated builder behind AGEIS Auto: jobs come
+> from ageis.hahaogames.com, games are packaged for play.hahaogames.com with the common P2P engine and published on the portal.
+
 **Play the 31 games:** [fal-video-to-game.vercel.app](https://fal-video-to-game.vercel.app)
 
 ![Video to Game: the generated video shrinks, the code and the fal assets come in, the game appears](gallery/hero.gif)

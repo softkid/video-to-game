@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Neon Run (fixture)</title>
+<style>html,body{margin:0;height:100%;overflow:hidden;background:#000}canvas{display:block;width:100vw;height:100vh}</style>
+<script type="importmap">
+{ "imports": {
+  "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
+  "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
+} }
+</script>
+</head>
+<body>
+<script id="world-src">
+// shared with a worker through textContent, like the gallery games do
+var WORLD = { lanes: 3, speed: 12 };
+</script>
+<script type="module">
+// Test fixture shaped like a video-to-game build: import map, inline module, a data script read by a blob worker, an asset.
+import * as THREE from 'three';
+import { RoundedBoxGeometry } from 'three/addons/geometries/RoundedBoxGeometry.js';
+const Q = new URLSearchParams(location.search);
+const renderer = new THREE.WebGLRenderer({ antialias: true });
+renderer.setSize(innerWidth, innerHeight);
+document.body.appendChild(renderer.domElement);
+const scene = new THREE.Scene(); scene.background = new THREE.Color(0x0b1030); scene.fog = new THREE.Fog(0x0b1030, 10, 60);
+const camera = new THREE.PerspectiveCamera(60, innerWidth / innerHeight, 0.1, 200); camera.position.set(0, 4, 9);
+scene.add(new THREE.HemisphereLight(0x99ccff, 0x220033, 1.2));
+const tex = new THREE.TextureLoader().load('assets/glow.png');
+const player = new THREE.Mesh(new RoundedBoxGeometry(1, 1, 1, 4, 0.2), new THREE.MeshStandardMaterial({ color: 0xff40c0, emissive: 0x401030, map: tex }));
+scene.add(player);
+const ground = new THREE.Mesh(new THREE.PlaneGeometry(40, 200), new THREE.MeshStandardMaterial({ color: 0x1a2a6a }));
+ground.rotation.x = -Math.PI / 2; ground.position.y = -0.5; scene.add(ground);
+const worker = new Worker(URL.createObjectURL(new Blob([document.getElementById('world-src').textContent + ';postMessage(WORLD.lanes)'], { type: 'text/javascript' })));
+let lanes = 0; worker.onmessage = (e) => { lanes = e.data; };
+const state = { phase: Q.has('autostart') ? 'play' : 'title', t: 0 };
+window.__game = { player, state: () => ({ ...state, lanes, x: player.position.x }) };
+renderer.setAnimationLoop(() => { state.t += 1 / 60; player.position.x = Math.sin(state.t) * 2; player.rotation.y += 0.02; renderer.render(scene, camera); });
+</script>
+</body>
+</html>

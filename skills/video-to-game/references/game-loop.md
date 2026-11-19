@@ -14,6 +14,7 @@ no build step: the file opens from any static server.
 - **An end** and a restart (R or Start). A short calm ending shot beats a score screen.
 - **Multiplayer** when the video shows it: local co-op on one keyboard (WASD + arrows) or AI teammates that
   play well enough to be shown in a trailer.
+  For HAHAO GAMES builds, online multiplayer through the P2P engine is required: see `hahao-multiplayer.md`.
 
 ## The contract with the playtest
 
