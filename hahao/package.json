@@ -1,0 +1,19 @@
+{
+  "name": "@hahao/video-to-game-runner",
+  "private": true,
+  "type": "module",
+  "description": "HAHAO build runner: AGEIS Auto jobs → video-to-game agent → package (CSP-safe, P2P engine) → Chromium verify → publish",
+  "engines": { "node": ">=20" },
+  "bin": { "hahao-runner": "runner/index.mjs" },
+  "scripts": {
+    "start": "node runner/index.mjs",
+    "once": "node runner/index.mjs --once",
+    "package": "node runner/cli-package.mjs",
+    "test": "node --test test/*.test.mjs"
+  },
+  "dependencies": {
+    "esbuild": "0.24.2",
+    "playwright": "1.56.1",
+    "three": "0.160.0"
+  }
+}

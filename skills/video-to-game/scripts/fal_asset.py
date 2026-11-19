@@ -18,6 +18,11 @@ Usage:
 
 Needs FAL_KEY in the environment and `pip install fal-client`. One job at a time: wait for it, look at it,
 then decide the next one.
+
+Budget (set by the HAHAO build runner, optional elsewhere):
+  FAL_MAX_CALLS=N          refuse the call once N calls were made (counted in FAL_COUNTER_FILE across output folders)
+  FAL_COUNTER_FILE=path    shared call counter, default fal_counter.json in the current folder
+  FAL_DENY_PREFIXES=a/,b/  refuse endpoints starting with any of these (the free tier blocks video and image-to-3D)
 """
 import argparse
 import json
@@ -60,6 +65,26 @@ def ext_for(url, hint):
     return mimetypes.guess_extension(hint or '') or '.bin'
 
 
+def check_budget(endpoint):
+    """Enforce the runner's caps before any money is spent. Returns the counter path (or None when no cap is set)."""
+    deny = [p.strip() for p in os.environ.get('FAL_DENY_PREFIXES', '').split(',') if p.strip()]
+    for p in deny:
+        if endpoint.startswith(p):
+            sys.exit(f'fal budget: {endpoint} is not available in this tier (FAL_DENY_PREFIXES). Use another approach.')
+    cap = os.environ.get('FAL_MAX_CALLS')
+    path = os.environ.get('FAL_COUNTER_FILE') or (cap and 'fal_counter.json')
+    if not path:
+        return None
+    data = json.load(open(path)) if os.path.exists(path) else {'calls': 0, 'endpoints': []}
+    if cap and data['calls'] >= int(cap):
+        sys.exit(f'fal budget: all {cap} fal calls of this build are used. Finish the game with the assets you have.')
+    data['calls'] += 1
+    data['endpoints'].append(endpoint)
+    with open(path, 'w') as f:
+        json.dump(data, f)
+    return path
+
+
 def main():
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument('endpoint')
@@ -71,6 +96,7 @@ def main():
 
     if not os.environ.get('FAL_KEY'):
         sys.exit('FAL_KEY is not set')
+    check_budget(a.endpoint)   # counted before the call: a failed call still cost a slot
     import fal_client  # pip install fal-client
 
     args = {}
